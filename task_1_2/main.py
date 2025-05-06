@@ -2,6 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+plt.rcParams.update({
+        "font.family": "serif",
+        "font.serif": ["Times New Roman"],
+        "font.size": 14,
+        "axes.labelsize": 16,
+        "axes.titlesize": 18,
+        "legend.fontsize": 13,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 12,
+        "figure.dpi": 300})
 
 def read_grid_and_initialize(name):
     with open(name, 'r') as file1:
@@ -21,12 +31,11 @@ def read_grid_and_initialize(name):
 
 
 def fill_matrices_with_perm(x, n, p_0, p_1, A, B, C, b, p_n, k_field):
-    # Граничные условия
     p_n[0] = p_0
     p_n[n - 1] = p_1
 
-    k_values = k_field(x)  # Значения проницаемости в узлах
-    k_interfaces = 2 * k_values[:-1] * k_values[1:] / (k_values[:-1] + k_values[1:])  # Гармоническое среднее
+    k_values = k_field(x)
+    k_interfaces = 2 * k_values[:-1] * k_values[1:] / (k_values[:-1] + k_values[1:])
 
     for i in range(1, n - 1):
         dx_minus = x[i] - x[i - 1]
@@ -36,13 +45,11 @@ def fill_matrices_with_perm(x, n, p_0, p_1, A, B, C, b, p_n, k_field):
         C[i] = k_interfaces[i] / dx_plus
         B[i] = A[i] + C[i]
 
-    # Граничные условия для матриц
     A[0] = 0
     C[n - 1] = 0
     B[0] = 1
     B[n - 1] = 1
 
-    # Правая часть
     b[0] = p_n[0]
     b[n - 1] = p_n[n - 1]
 
@@ -54,7 +61,6 @@ def solve_tridiagonal(A, B, C, b):
     alpha = np.zeros(n)
     beta = np.zeros(n)
 
-    # Прямой ход
     alpha[0] = C[0] / B[0]
     beta[0] = b[0] / B[0]
 
@@ -62,7 +68,6 @@ def solve_tridiagonal(A, B, C, b):
         alpha[i] = C[i] / (B[i] - A[i] * alpha[i - 1])
         beta[i] = (b[i] + A[i] * beta[i - 1]) / (B[i] - A[i] * alpha[i - 1])
 
-    # Обратный ход
     p_n = np.zeros(n)
     p_n[-1] = beta[-1]
     for i in range(n - 2, -1, -1):
@@ -111,7 +116,7 @@ def plot_pressure(x, p_n, p_a, case):
 
     filename = f'plots/pressure_{case.replace(" ", "_")}.png'
     plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.show()
+    plt.close()
 
 
 def plot_dissipation_profile(x, p_n, k_field, case):
@@ -130,7 +135,7 @@ def plot_dissipation_profile(x, p_n, k_field, case):
 
     filename = f'plots/dissipation_{case.replace(" ", "_")}.png'
     plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.show()
+    plt.close()
 
 
 def calculate_average_perm(x, k_field):
@@ -180,7 +185,6 @@ def calculate_residual_vs_nodes(name, case, k_field, analytical_solution, max_no
     for n_nodes in nodes_range:
         x = np.linspace(x_full.min(), x_full.max(), n_nodes)
 
-        # Инициализация
         p_0, p_1 = 1, 0
         A = np.zeros(n_nodes)
         B = np.zeros(n_nodes)
@@ -188,12 +192,10 @@ def calculate_residual_vs_nodes(name, case, k_field, analytical_solution, max_no
         b = np.zeros(n_nodes)
         p_n = np.zeros(n_nodes)
 
-        # Решение
         A, B, C, b = fill_matrices_with_perm(x, n_nodes, p_0, p_1, A, B, C, b, p_n, k_field)
         p_n = solve_tridiagonal(A, B, C, b)
         p_a = analytical_solution(x, case)
 
-        # Расчет невязки
         E = np.sqrt(np.mean((p_n - p_a) ** 2))
         residuals.append(E)
 
@@ -209,13 +211,12 @@ def calculate_residual_vs_nodes(name, case, k_field, analytical_solution, max_no
         os.makedirs('plots')
     filename = f'plots/residuals_{case.replace(" ", "_")}.png'
     plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.show()
+    plt.close()
 
     return nodes_range, residuals
 
 
 def main():
-    # Параметры задачи
     L = 100
     m = 0.2
     delta_p = 1e6

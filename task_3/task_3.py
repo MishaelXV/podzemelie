@@ -15,8 +15,10 @@ plt.rcParams.update({
     "ytick.labelsize": 12,
     "figure.dpi": 300})
 
-Q = 100
-k = 1
+# Параметры задачи
+Q = 100  #дебит
+k = 1  #проницаемость
+
 x = np.linspace(-5, 5, 300)
 y = np.linspace(-5, 5, 300)
 X, Y = np.meshgrid(x, y)
@@ -29,20 +31,18 @@ def potential_case1(x, y):
 
 def potential_case2(x, y):
     x0, y0 = 0, 2
-    r1 = np.sqrt((x - x0)**2 + (y - y0)**2)
-    r2 = np.sqrt((x - x0)**2 + (y + y0)**2)
-    r1 = np.where(r1 == 0, 1e-6, r1)
-    r2 = np.where(r2 == 0, 1e-6, r2)
-    return -Q / (2 * np.pi * k) * (np.log(r1) + np.log(r2))
+    r1 = np.sqrt((x-x0)**2 + (y-y0)**2)
+    r2 = np.sqrt((x-x0)**2 + (y+y0)**2)
+    return -Q/(2*np.pi*k) * np.log(r1) + Q/(2*np.pi*k) * np.log(r2)
 
 
 def potential_case3(x, y):
     x0, y0 = 0, 2
-    r1 = np.sqrt((x - x0)**2 + (y - y0)**2)
-    r2 = np.sqrt((x - x0)**2 + (y + y0)**2)
+    r1 = np.sqrt((x-x0)**2 + (y-y0)**2)  # Добывающая (Q < 0)
+    r2 = np.sqrt((x-x0)**2 + (y+y0)**2)  # Отражённая добывающая (Q < 0)
     r1 = np.where(r1 == 0, 1e-6, r1)
     r2 = np.where(r2 == 0, 1e-6, r2)
-    return -Q / (2 * np.pi * k) * np.log(r1) + Q / (2 * np.pi * k) * np.log(r2)
+    return -Q/(2*np.pi*k) * (np.log(r1) + np.log(r2))
 
 
 wells = [(0, 0, -100), (3, 3, 50), (-3, -3, 50)]
@@ -57,25 +57,33 @@ def potential_case4(x, y):
 
 wells_32 = [(0, 0, -100), (1, 0, -100), (0, 1, -100)]
 
+
 def potential_case32(x, y):
     phi = np.zeros_like(x)
     for xw, yw, qw in wells_32:
+        # 1. Реальная скважина
         r = np.sqrt((x - xw)**2 + (y - yw)**2)
         r = np.where(r == 0, 1e-6, r)
         phi += -qw / (2 * np.pi * k) * np.log(r)
 
-        x_mirror = -2 - xw
-        r_m = np.sqrt((x - x_mirror)**2 + (y - yw)**2)
-        r_m = np.where(r_m == 0, 1e-6, r_m)
-        phi += qw / (2 * np.pi * k) * np.log(r_m)
+        # 2. Отражение по x (непроницаемая): знак тот же
+        x_m = -2 - xw
+        r_x = np.sqrt((x - x_m)**2 + (y - yw)**2)
+        r_x = np.where(r_x == 0, 1e-6, r_x)
+        phi += -qw / (2 * np.pi * k) * np.log(r_x)
 
-        y_mirror = -2 - yw
-        r_p = np.sqrt((x - xw)**2 + (y - y_mirror)**2)
-        r_p = np.where(r_p == 0, 1e-6, r_p)
-        phi += -qw / (2 * np.pi * k) * np.log(r_p)
+        # 3. Отражение по y (контур питания): знак противоположный
+        y_m = -2 - yw
+        r_y = np.sqrt((x - xw)**2 + (y - y_m)**2)
+        r_y = np.where(r_y == 0, 1e-6, r_y)
+        phi += qw / (2 * np.pi * k) * np.log(r_y)
+
+        # 4. Комбинированное отражение по x и y
+        r_xy = np.sqrt((x - x_m)**2 + (y - y_m)**2)
+        r_xy = np.where(r_xy == 0, 1e-6, r_xy)
+        phi += qw / (2 * np.pi * k) * np.log(r_xy)
 
     return phi
-
 
 def potential_case33(x, y):
     xw, yw = 1, 1

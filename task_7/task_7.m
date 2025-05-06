@@ -1,0 +1,28 @@
+(* ::Package:: *)
+
+(* ::Input:: *)
+(*(*\:041a\:043e\:0440\:0440\:0435\:043a\:0442\:043d\:043e\:0435 \:043e\:043f\:0440\:0435\:0434\:0435\:043b\:0435\:043d\:0438\:0435 \:0444\:0443\:043d\:043a\:0446\:0438\:0438 \:0440\:0430\:0441\:043f\:0440\:0435\:0434\:0435\:043b\:0435\:043d\:0438\:044f \:0442\:0435\:043c\:043f\:0435\:0440\:0430\:0442\:0443\:0440\:044b*)temperatureDistribution[r_,Pe_,psi_,t0_,rc_,chi_,cpw_,Q_]:=Module[{alpha=psi*Pe*cpw*Q/(4 Pi),x=r^2*chi*Pe/(4 t0),xc=rc^2*chi*Pe/(4 t0)},If[r<=rc,0,1-Gamma[alpha,x]/Gamma[alpha,xc]]]*)
+(**)
+(*(*\:041f\:0430\:0440\:0430\:043c\:0435\:0442\:0440\:044b \:043f\:043e \:0443\:043c\:043e\:043b\:0447\:0430\:043d\:0438\:044e*)*)
+(*rc=0.1; (*\:0440\:0430\:0434\:0438\:0443\:0441 \:0441\:043a\:0432\:0430\:0436\:0438\:043d\:044b*)*)
+(*chi=1;  (*\:043f\:0430\:0440\:0430\:043c\:0435\:0442\:0440 \[Chi]*)*)
+(*cpw=1;  (*\:0442\:0435\:043f\:043b\:043e\:0435\:043c\:043a\:043e\:0441\:0442\:044c \:0432\:043e\:0434\:044b*)*)
+(*Q=1;    (*\:0440\:0430\:0441\:0445\:043e\:0434*)*)
+(**)
+(*(*\:041e\:0431\:0449\:0438\:0439 \:0441\:0442\:0438\:043b\:044c \:0434\:043b\:044f \:0432\:0441\:0435\:0445 \:0433\:0440\:0430\:0444\:0438\:043a\:043e\:0432*)*)
+(*commonStyle={BaseStyle->{FontFamily->"Times New Roman",12},GridLines->{Automatic,Automatic},GridLinesStyle->Directive[Gray,Dashed],PlotStyle->Thick,ImageSize->800};*)
+(**)
+(*(*\:0412\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0430\:0446\:0438\:044f \:0441 \:0443\:043b\:0443\:0447\:0448\:0435\:043d\:043d\:044b\:043c \:0441\:0442\:0438\:043b\:0435\:043c*)*)
+(*Manipulate[Plot[temperatureDistribution[r,Pe,psi,t0,rc,chi,cpw,Q],{r,rc,5},PlotRange->{{rc,5},{0,1}},Evaluate[commonStyle],AxesLabel->{Style["r",20,Black],Style["\[Theta]",20,Black]},PlotLabel->Style[StringForm["\:0420\:0430\:0441\:043f\:0440\:0435\:0434\:0435\:043b\:0435\:043d\:0438\:0435 \:0442\:0435\:043c\:043f\:0435\:0440\:0430\:0442\:0443\:0440\:044b Pe=``, \[Psi]=``, t0=``",Pe,psi,t0],20,Black],PlotLegends->Placed[LineLegend[{StringForm["Pe=``, \[Psi]=``, t0=``",Pe,psi,t0]},LegendMarkerSize->20,LegendFunction->(Framed[#,RoundingRadius->5,FrameStyle->Gray]&)],{0.85,0.2}]],{Pe,0.2,5,Appearance->"Labeled"},{psi,1,4,1,Appearance->"Labeled"},{t0,2,6,2,Appearance->"Labeled"}]*)
+(**)
+(*(*\:0412\:043b\:0438\:044f\:043d\:0438\:0435 \:0447\:0438\:0441\:043b\:0430 \:041f\:0435\:043a\:043b\:0435*)*)
+(*Plot[Evaluate@Table[temperatureDistribution[r,Pe,1,2,rc,chi,cpw,Q],{Pe,{0.2,1,5}}],{r,rc,5},PlotRange->{{rc,5},{0,1}},Evaluate[commonStyle],AxesLabel->{Style["r",20,Black],Style["\[Theta]",20,Black]},PlotLabel->Style["\:0412\:043b\:0438\:044f\:043d\:0438\:0435 \:0447\:0438\:0441\:043b\:0430 \:041f\:0435\:043a\:043b\:0435 (\[Psi]=1, t0=2)",20,Black],PlotLegends->Placed[LineLegend[{"Pe=0.2","Pe=1","Pe=5"},LegendMarkerSize->20,LegendFunction->(Framed[#,RoundingRadius->5,FrameStyle->Gray]&)],{0.85,0.2}]]*)
+(**)
+(*(*\:0412\:043b\:0438\:044f\:043d\:0438\:0435 \:0432\:0440\:0435\:043c\:0435\:043d\:0438 \:0437\:0430\:043a\:0430\:0447\:043a\:0438*)*)
+(*Plot[Evaluate@Table[temperatureDistribution[r,1,1,t0,rc,chi,cpw,Q],{t0,{2,4,6}}],{r,rc,5},PlotRange->{{rc,5},{0,1}},Evaluate[commonStyle],AxesLabel->{Style["r",20,Black],Style["\[Theta]",20,Black]},PlotLabel->Style["\:0412\:043b\:0438\:044f\:043d\:0438\:0435 \:0432\:0440\:0435\:043c\:0435\:043d\:0438 \:0437\:0430\:043a\:0430\:0447\:043a\:0438 (Pe=1, \[Psi]=1)",20,Black],PlotLegends->Placed[LineLegend[{"t0=2","t0=4","t0=6"},LegendMarkerSize->20,LegendFunction->(Framed[#,RoundingRadius->5,FrameStyle->Gray]&)],{0.85,0.2}]]*)
+(**)
+(*(*\:0412\:043b\:0438\:044f\:043d\:0438\:0435 \:0434\:043e\:043b\:0438 \:043f\:0440\:0438\:0435\:043c\:0438\:0441\:0442\:043e\:0441\:0442\:0438*)*)
+(*Plot[Evaluate@Table[temperatureDistribution[r,1,psi,2,rc,chi,cpw,Q],{psi,{1,2,4}}],{r,rc,5},PlotRange->{{rc,5},{0,1}},Evaluate[commonStyle],AxesLabel->{Style["r",20,Black],Style["\[Theta]",20,Black]},PlotLabel->Style["\:0412\:043b\:0438\:044f\:043d\:0438\:0435 \:0434\:043e\:043b\:0438 \:043f\:0440\:0438\:0435\:043c\:0438\:0441\:0442\:043e\:0441\:0442\:0438 (Pe=1, t0=2)",20,Black],PlotLegends->Placed[LineLegend[{"\[Psi]=1","\[Psi]=2","\[Psi]=4"},LegendMarkerSize->20,LegendFunction->(Framed[#,RoundingRadius->5,FrameStyle->Gray]&)],{0.85,0.2}]]*)
+
+
+
